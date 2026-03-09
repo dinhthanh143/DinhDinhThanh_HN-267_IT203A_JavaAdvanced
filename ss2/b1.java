@@ -1,34 +1,49 @@
-public class b1{
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+public class b1 {
 
     public static void run() {
-        User defaultUser = new User();
-        defaultUser.setId(1);
-        defaultUser.setName("Default User");
-        defaultUser.setEmail("default@example.com");
-        defaultUser.setRole("User");
-        System.out.println("Thông tin chi tiết của User:");
-        System.out.println("ID: " + defaultUser.getId());
-        System.out.println("Name: " + defaultUser.getName());
-        System.out.println("Email: " + defaultUser.getEmail());
-        System.out.println("Full User Info: " + defaultUser.toString());
+        // 1. Supplier: Khởi tạo User mặc định (Không đầu vào -> Trả về User)
+        Supplier<User> userSupplier = () -> new User(1, "Default User", "default@example.com", "User");
+        User defaultUser = userSupplier.get();
 
+        // 2. Consumer: In thông tin chi tiết (Đầu vào User -> Thực hiện hành động, không trả về)
+        Consumer<User> userPrinter = u -> {
+            System.out.println("ID: " + u.getId());
+            System.out.println("Name: " + u.getName());
+            System.out.println("Email: " + u.getEmail());
+        };
+
+        System.out.println("=== Thông tin chi tiết của User (dùng Consumer): ===");
+        userPrinter.accept(defaultUser);
+
+        // 3. Function: Chuyển đổi User thành String (Đầu vào User -> Trả về String)
+        Function<User, String> userToStringConverter = u -> "Full User Info: " + u.toString();
+        System.out.println(userToStringConverter.apply(defaultUser));
+
+        // 4. Predicate: Kiểm tra Admin (Đầu vào User -> Trả về boolean)
         User customUser = new User(2, "John Doe", "john.doe@example.com", "Admin");
-        System.out.println("\nThông tin User thứ hai:");
-        System.out.println("Full User Info: " + customUser.toString());
-        System.out.println(customUser.isAdmin());
+        Predicate<User> adminCheck = u -> "Admin".equals(u.getRole());
+
+        System.out.println("\n=== Kiểm tra quyền Admin (dùng Predicate): ===");
+        System.out.println("User: " + customUser.getName() + " is Admin? " + adminCheck.test(customUser));
     }
 
     public static void main(String[] args) {
         run();
     }
 }
+
 class User {
     private int id;
     private String name;
     private String email;
     private String role;
-    public User() {
-    }
+
+    public User() {}
 
     public User(int id, String name, String email, String role) {
         this.id = id;
@@ -37,41 +52,18 @@ class User {
         this.role = role;
     }
 
-    public boolean isAdmin(){
-        if (this.role.equals("Admin")) return true;
-        return false;
-    }
-    public int getId() {
-        return id;
+    public boolean isAdmin() {
+        return "Admin".equals(this.role);
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
     @Override
     public String toString() {
